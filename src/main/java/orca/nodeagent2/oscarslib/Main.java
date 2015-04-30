@@ -313,11 +313,11 @@ public class Main implements Plugin {
 	public static void main(String[] argv) {
 		Properties all = new Properties();
 
-		all.put(TRUSTSTORE_PROP, "/Users/ibaldin/workspace-oscars/orca-oscars-0.6/scripts/oscars-orca3.jks");
-		all.put(KEYSTORE_PROP, "/Users/ibaldin/workspace-oscars/orca-oscars-0.6/scripts/oscars-orca3.jks");
-		all.put(ALIAS_PROP, "orca");
-		all.put(PASSWORD_PROP, "VeryTough55!");
-		all.put(DESCRIPTION_PROP, "orca-test-circuit");
+		all.put(TRUSTSTORE_PROP, "");
+		all.put(KEYSTORE_PROP, "");
+		all.put(ALIAS_PROP, "");
+		all.put(PASSWORD_PROP, "");
+		all.put(DESCRIPTION_PROP, "");
 
 		all.put(IDC_PROP, "https://al2s.net.internet2.edu:9001/OSCARS");
 		all.put(EPA_PROP, "urn:ogf:network:domain=al2s.net.internet2.edu:node=sdn-sw.star.net.internet2.edu:port=eth5/2:link=*");
@@ -346,7 +346,7 @@ public class Main implements Plugin {
 
 		if (renew){
 			Properties sched = new Properties();
-			sched.put(GRI_PROP, "al2s.net.internet2.edu-61161");
+			sched.put(GRI_PROP, argv[0]);
 
 			Main p = new Main();
 			try {
@@ -361,7 +361,7 @@ public class Main implements Plugin {
 		
 		if (leave){
 			Properties sched = new Properties();
-			sched.put(GRI_PROP, "al2s.net.internet2.edu-61161");
+			sched.put(GRI_PROP, argv[0]);
 
 			Main p = new Main();
 			try {
