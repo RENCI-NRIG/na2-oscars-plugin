@@ -1,0 +1,3 @@
+This depends only on ../oscars-lib/oscars-soap (do mvn install there)
+
+OSCARS-LIB is in  https://github.com/esnet/oscars-lib
