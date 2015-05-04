@@ -1,3 +1,30 @@
 This depends only on ../oscars-lib/oscars-soap (do mvn install there)
 
 OSCARS-LIB is in  https://github.com/esnet/oscars-lib
+
+For NA2 configuration, the following parameters can be specified:
+
+                <plugin name="oscars">
+			<!-- mandatory -->
+                        <jar>/some/path/to/jar</jar>
+			<!-- mandatory -->
+                        <mainClass>orca.nodeagent2.oscarslib.Main</mainClass>
+			<!-- mandatory, recommended 24 hours -->
+                        <schedulePeriod length="6" unit="minute" />
+			<!-- mandatory, recommended to be 10-15 minutes, depending on tick length -->
+                        <renewAdvanceTicks>2</renewAdvanceTicks>
+                        <properties>
+				<!-- mandatory -->
+                                <property name="oscars.keystore" value="/path/to/jks" />
+				<!-- mandatory -->
+                                <property name="oscars.truststore" value="/path/to/jks" />
+				<!-- mandatory -->
+                                <property name="oscars.alias" value="alias" />
+				<!-- mandatory -->
+                                <property name="oscars.password" value="password" />
+				<!-- mandatory -->
+                                <property name="oscars.description" value="ORCA-NA2-circuit" />
+				<!-- optional, defaults to false, set to true if you want to see SOAP message content  -->
+                                <property name="oscars.logging" value="false" />
+                        </properties>
+                </plugin>
