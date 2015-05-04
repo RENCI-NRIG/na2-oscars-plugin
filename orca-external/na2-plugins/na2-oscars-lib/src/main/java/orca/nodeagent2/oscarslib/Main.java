@@ -28,16 +28,18 @@ public class Main implements Plugin {
 	private static final String EPZ_PROP = "oscars.endpointZ";
 	private static final String EPA_PROP = "oscars.endpointA";
 	private static final String BW_PROP = "oscars.bw";
-	private static final String IDC_PROP = "oscars.idc";
+	private static final String IDC_PROP = "oscars.ctrl.to.call";
 	private static final String PASSWORD_PROP = "oscars.password";
 	private static final String ALIAS_PROP = "oscars.alias";
 	private static final String KEYSTORE_PROP = "oscars.keystore";
 	private static final String TRUSTSTORE_PROP = "oscars.truststore";
 	private static final String DESCRIPTION_PROP = "oscars.description";
+	private static final String LOGGING_PROP = "oscars.logging";
 	private static final int POLL_INTERVAL=10;
 	Log log;
 	Map<String, Driver> driverCache;
 	Properties configProperties;
+	boolean oscarsLogging = false;
 
 	public void initialize(String config, Properties configProps)
 			throws PluginException {
@@ -58,6 +60,10 @@ public class Main implements Plugin {
 					!configProperties.containsKey(DESCRIPTION_PROP))
 				throw new PluginException("Plugin configuration must specify the following properties: " + 
 						TRUSTSTORE_PROP + ", " + KEYSTORE_PROP + ", " + ALIAS_PROP + ", " + PASSWORD_PROP + ", " + DESCRIPTION_PROP);
+			
+			if (configProperties.containsKey(LOGGING_PROP) &&
+					"true".equalsIgnoreCase(configProperties.get(LOGGING_PROP)))
+				oscarsLogging = true;
 		} catch (Exception e) {
 			throw new PluginException("Unable to initialize oscars: " + e);
 		}
@@ -70,13 +76,13 @@ public class Main implements Plugin {
 	 */
 	private Driver getDriver(String idcUrl) {
 		if (!driverCache.containsKey(idcUrl)) {
-			log.info("Creating driver for " + idcUrl + " " + configProperties.get(TRUSTSTORE_PROP) + " " + configProperties.get(KEYSTORE_PROP) + " " + configProperties.get(ALIAS_PROP) + " " + configProperties.get(PASSWORD_PROP));
+			log.info("Creating driver for " + idcUrl + " " + configProperties.get(TRUSTSTORE_PROP) + " " + configProperties.get(KEYSTORE_PROP) + " " + configProperties.get(ALIAS_PROP));
 			driverCache.put(idcUrl,  
 					new Driver(idcUrl, 
 							configProperties.get(TRUSTSTORE_PROP),
 							configProperties.get(KEYSTORE_PROP),
 							configProperties.get(ALIAS_PROP),
-							configProperties.get(PASSWORD_PROP)));
+							configProperties.get(PASSWORD_PROP), oscarsLogging));
 		}
 		return driverCache.get(idcUrl);
 	}
@@ -122,6 +128,14 @@ public class Main implements Plugin {
 				!callerProps.containsKey(TAGZ_PROP))
 			throw new PluginException("Insufficient configuration prameters for join operation: idc, bw, endpoint[AZ] and tag[AZ] must be specified");
 
+		if ((callerProps.get(IDC_PROP).length() == 0) ||
+				(callerProps.get(BW_PROP).length() == 0) ||
+				(callerProps.get(EPA_PROP).length() == 0) ||
+				(callerProps.get(EPZ_PROP).length() == 0) ||
+				(callerProps.get(TAGA_PROP).length() == 0) ||
+				(callerProps.get(TAGZ_PROP).length() == 0))
+			throw new PluginException("Insufficient configuration prameters for join operation: idc, bw, endpoint[AZ] and tag[AZ] must be non-zero length");
+		
 		Driver d = getDriver(callerProps, null);
 
 		try {
@@ -153,9 +167,10 @@ public class Main implements Plugin {
 			return pr;
 
 		} catch (OSCARSFaultMessage ofe) {
-			throw new PluginException("Error: OSCARS Fault: " + ofe.getMessage());
+			throw new PluginException("Error: OSCARS Fault: " + ofe.getMessage() + " due to " + ofe.getCause());
 		} catch (Exception e) {
-			throw new PluginException("Error: Generic exception: " + e.getMessage());
+			e.printStackTrace();
+			throw new PluginException("Error: Generic exception: " + e.getMessage() + " due to " + e.getCause());
 		}
 	}
 
@@ -179,9 +194,9 @@ public class Main implements Plugin {
 			return pr;
 
 		} catch (OSCARSFaultMessage ofe) {
-			throw new PluginException("Error: OSCARS Fault: " + ofe.getMessage());
+			throw new PluginException("Error: OSCARS Fault: " + ofe.getMessage() + " due to " + ofe.getCause());
 		} catch (Exception e) {
-			throw new PluginException("Error: Generic exception: " + e.getMessage());
+			throw new PluginException("Error: Generic exception: " + e.getMessage() + " due to " + e.getCause());
 		}
 	}
 
@@ -206,9 +221,9 @@ public class Main implements Plugin {
 
 			return pr;
 		} catch (OSCARSFaultMessage ofe) {
-			throw new PluginException("Error: OSCARS Fault: " + ofe.getMessage());
+			throw new PluginException("Error: OSCARS Fault: " + ofe.getMessage() + " due to " + ofe.getCause());
 		} catch (Exception e) {
-			throw new PluginException("Error: Generic exception: " + e.getMessage());
+			throw new PluginException("Error: Generic exception: " + e.getMessage() + " due to " + e.getCause());
 		}
 	}
 
@@ -237,9 +252,9 @@ public class Main implements Plugin {
 
 			return pr;
 		} catch (OSCARSFaultMessage ofe) {
-			throw new PluginException("Error: OSCARS Fault: " + ofe.getMessage());
+			throw new PluginException("Error: OSCARS Fault: " + ofe.getMessage() + " due to " + ofe.getCause());
 		} catch (Exception e) {
-			throw new PluginException("Error: Generic exception: " + e.getMessage());
+			throw new PluginException("Error: Generic exception: " + e.getMessage() + " due to " + e.getCause());
 		}
 	}
 

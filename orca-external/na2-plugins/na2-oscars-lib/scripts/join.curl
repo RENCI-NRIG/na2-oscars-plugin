@@ -4,12 +4,12 @@ url="http://localhost:8080/join/oscars"
 
 
 curl -k -g -H 'Content-Type: application/json' --digest --user admin:pass -X POST $url -d '{
-  "oscars.idc" : "https://al2s.net.internet2.edu:9001/OSCARS",
+  "oscars.ctrl.to.call" : "https://al2s.net.internet2.edu:9001/OSCARS",
   "oscars.bw" : "100",
   "oscars.endpointA" : "urn:ogf:network:domain=al2s.net.internet2.edu:node=sdn-sw.star.net.internet2.edu:port=eth5/2:link=*",
   "oscars.endpointZ" : "urn:ogf:network:domain=al2s.net.internet2.edu:node=sdn-sw.houh.net.internet2.edu:port=eth7/1:link=*",
   "oscars.tagA" : "1700",
-  "oscars.tagZ" : "880"
+  "oscars.tagZ" : "885"
 }'
 
 echo 
