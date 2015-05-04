@@ -306,7 +306,7 @@ public class Driver {
 	 * @throws OSCARSClientException
 	 * @throws Exception
 	 */
-	public void extendReservation(String gri, Date newEnd, int pollInterval) throws OSCARSFaultMessage, Exception {
+	public synchronized void extendReservation(String gri, Date newEnd, int pollInterval) throws OSCARSFaultMessage, Exception {
 		Date now = new Date();
 		
 		if (newEnd.getTime() <= now.getTime()) 
@@ -361,7 +361,7 @@ public class Driver {
 	 * @throws OSCARSClientException
 	 * @throws Exception
 	 */
-	public void createPath(String gri, int pollInterval) throws OSCARSFaultMessage, Exception {
+	public synchronized void createPath(String gri, int pollInterval) throws OSCARSFaultMessage, Exception {
 
 		//create request
 		CreatePathContent request = new CreatePathContent();
@@ -404,7 +404,7 @@ public class Driver {
 	 * @throws OSCARSClientException
 	 * @throws Exception
 	 */
-	public void teardownPath(String gri, int pollInterval) throws OSCARSFaultMessage, Exception {
+	public synchronized void teardownPath(String gri, int pollInterval) throws OSCARSFaultMessage, Exception {
 
 		//create request
 		TeardownPathContent request = new TeardownPathContent();
