@@ -10,6 +10,6 @@ curl -k -g -H 'Content-Type: application/json' --digest --user admin:pass -X POS
   "oscars.endpointZ" : "urn:ogf:network:domain=al2s.net.internet2.edu:node=sdn-sw.houh.net.internet2.edu:port=eth7/1:link=*",
   "oscars.tagA" : "1700",
   "oscars.tagZ" : "885"
-}'
+}' | python -m json.tool
 
 echo 
