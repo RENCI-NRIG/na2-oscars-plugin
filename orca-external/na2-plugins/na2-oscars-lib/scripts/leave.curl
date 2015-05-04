@@ -6,5 +6,5 @@ url="http://localhost:8080/leave/oscars"
 curl -k -g -H 'Content-Type: application/json' --digest --user admin:pass -X POST $url/$1 -d '{
   "property one":"some value one",
   "property two":"some value two"
-}'
+}' | python -m json.tool
 echo 
