@@ -1,6 +1,4 @@
-This depends only on ../oscars-lib/oscars-soap (do mvn install there)
-
-OSCARS-LIB is in  https://github.com/esnet/oscars-lib
+OSCARS-LIB is in  https://github.com/esnet/oscars-lib, only oscars-soap is needed to build this. 
 
 For NA2 configuration, the following parameters can be specified:
 
