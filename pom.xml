@@ -19,9 +19,31 @@
 		<cxf.version>3.0.3</cxf.version>
 		<maven-compiler-version>3.2</maven-compiler-version>
 		<java.version>1.7</java.version>
+                <orca.repository.id>geni-orca-libs</orca.repository.id>
+                <orca.snap.repository.id>geni-orca-snapshot</orca.snap.repository.id>
+                <orca.repository.url>http://ci-dev.renci.org/nexus/content/repositories/geni-orca-libs</orca.repository.url>
+                <orca.snap.repository.url>http://ci-dev.renci.org/nexus/content/repositories/geni-orca-snapshot/</orca.snap.repository.url>
 	</properties>
 
 	<repositories>
+                <!-- Orca main repository -->
+                <repository>
+                        <id>${orca.repository.id}</id>
+                        <name>Orca Project Maven Repository</name>
+                        <url>http://ci-dev.renci.org/nexus/content/repositories/geni-orca-libs</url>
+                        <snapshots>
+                                <enabled>false</enabled>
+                        </snapshots>
+                </repository>
+                <!-- ORCA snapshots -->
+                <repository>
+                        <id>${orca.snap.repository.id}</id>
+                        <url>${orca.snap.repository.url}</url>
+                        <snapshots>
+                                <enabled>true</enabled>
+                                <updatePolicy>always</updatePolicy>
+                        </snapshots>
+                </repository>
 		<repository>
 			<id>esnet.oscars</id>
 			<url>http://oscars.es.net/maven/oscars-lib/release</url>
