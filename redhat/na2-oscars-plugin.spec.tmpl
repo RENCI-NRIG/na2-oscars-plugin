@@ -1,7 +1,7 @@
 %global commit @@COMMIT@@
 %global shortcommit @@SHORTCOMMIT@@
 
-Summary: nodeagent2 plugin allowing use of executable scripts
+Summary: nodeagent2 plugin for interfacing with Internet2's OSCARS service
 Name: na2-oscars-plugin
 Version: 0.1
 Release: @@DATE@@git%{shortcommit}
@@ -27,8 +27,8 @@ Requires:       nodeagent2
 %global debug_package %{nil}
 
 %description
-This package contains the Exec plugin for nodeagent2.
-It allows nodeagent2 to call scripts for its various operations.
+This package contains the OSCARS plugin for nodeagent2.
+It provides nodeagent2 with the means to reserve circuits through Internet2 using the OSCARS service.
 
 %prep
 %setup -q -n %{name}-%{version}-%{shortcommit}
