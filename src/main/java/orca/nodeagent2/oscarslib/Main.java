@@ -67,7 +67,7 @@ public class Main implements Plugin {
 		} catch (Exception e) {
 			throw new PluginException("Unable to initialize oscars: " + e);
 		}
-		log.info("Initializing oscars plugin with properties " + configProps);
+		log.debug("Initializing oscars plugin with properties " + configProps);
 	}
 
 	/** 
@@ -238,9 +238,6 @@ public class Main implements Plugin {
 			log.info("Querying OSCARS reservation " + schedProps.get(GRI_PROP));
 
 			ResDetails rd = d.queryReservation(schedProps.get(GRI_PROP));
-
-			if (schedProps == null)
-				schedProps = new Properties();
 
 			schedProps.put(STATUS_PROP, rd.getStatus());
 			Date ct = new Date(rd.getUserRequestConstraint().getStartTime()*1000);
