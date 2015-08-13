@@ -144,10 +144,14 @@ public class Main implements Plugin {
 			int tagA = Integer.parseInt(callerProps.get(TAGA_PROP));
 			int tagZ = Integer.parseInt(callerProps.get(TAGZ_PROP));
 
-			log.info("Creating OSCARS reservation from " + callerProps.get(EPA_PROP) + "/" + tagA + " to " + callerProps.get(EPZ_PROP) + "/" + tagZ + " with bandwidth " + bw);
+			// ORCA operates on bps, OSCARS on Mbps
+			int bwMbps = (int)Math.round(Math.ceil(bw/1000000.0));
+			
+			log.info("Creating OSCARS reservation from " + callerProps.get(EPA_PROP) + "/" + tagA + 
+					" to " + callerProps.get(EPZ_PROP) + "/" + tagZ + " with bandwidth " + bwMbps + "Mbps");
 
 			String gri = d.createReservationPoll(configProperties.get(DESCRIPTION_PROP), 
-					new Date(), end, bw, 
+					new Date(), end, bwMbps, 
 					callerProps.get(EPA_PROP), tagA, 
 					callerProps.get(EPZ_PROP), tagZ, 
 					POLL_INTERVAL);
@@ -271,7 +275,7 @@ public class Main implements Plugin {
 		all.put(TAGZ_PROP, "880");
 		all.put(BW_PROP, "100");
 
-		boolean join=false, renew=false, leave=true;
+		boolean join=false, renew=false, leave=false;
 
 		if (join) {
 			try {
@@ -320,6 +324,4 @@ public class Main implements Plugin {
 		}
 
 	}
-
-
 }
