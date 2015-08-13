@@ -1,0 +1,56 @@
+%global commit @@COMMIT@@
+%global shortcommit @@SHORTCOMMIT@@
+
+Summary: nodeagent2 plugin for interfacing with Internet2's OSCARS service
+Name: na2-oscars-plugin
+Version: 0.1
+Release: @@DATE@@git%{shortcommit}
+Source0: https://github.com/RENCI-NRIG/na2-oscars-plugin/archive/%{commit}/%{name}-%{version}-%{shortcommit}.tar.gz
+Vendor: ExoGENI
+Packager: ExoGENI
+License: Eclipse Public License
+URL: https://github.com/RENCI-NRIG/na2-oscars-plugin
+
+BuildRoot: %{_builddir}/%{name}-root
+BuildArch: noarch
+
+BuildRequires:  jdk
+Requires:       jdk
+Requires:       nodeagent2
+
+%define homedir /opt/nodeagent2
+%define exogeni_user_id geni-orca
+%define exogeni_group_id nonrenci
+# couldn't find another way to disable the brp-java-repack-jars which was called in __os_install_post
+%define __os_install_post %{nil}
+# And this is needed to get around the generated wrapper binaries...
+%global debug_package %{nil}
+
+%description
+This package contains the OSCARS plugin for nodeagent2.
+It provides nodeagent2 with the means to reserve circuits through Internet2 using the OSCARS service.
+
+%prep
+%setup -q -n %{name}-%{version}-%{shortcommit}
+
+%build
+LANG=en_US.UTF-8 mvn clean package
+
+%install
+# Prep the install location.
+rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT%{homedir}
+mkdir -p $RPM_BUILD_ROOT%{homedir}/plugins
+
+cp -R target/na2-oscars-lib-0.6SNAPSHOT-executable.jar $RPM_BUILD_ROOT%{homedir}/plugins/%{name}.jar
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-, %{exogeni_user_id}, %{exogeni_group_id})
+%{homedir}/plugins/%{name}.jar
+
+%changelog
+*Thu Aug 06 2015 Victor J. Orlikowski <vjo@cs.duke.edu>
+- Packaging na2-oscars-plugin
