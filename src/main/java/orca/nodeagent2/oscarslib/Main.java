@@ -140,7 +140,7 @@ public class Main implements Plugin {
 
 		try {
 			// convert bandwidth and vlan tags to ints
-			int bw = Integer.parseInt(callerProps.get(BW_PROP));
+			long bw = Long.parseLong(callerProps.get(BW_PROP));
 			int tagA = Integer.parseInt(callerProps.get(TAGA_PROP));
 			int tagZ = Integer.parseInt(callerProps.get(TAGZ_PROP));
 
