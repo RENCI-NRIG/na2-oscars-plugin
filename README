@@ -1,6 +1,6 @@
 OSCARS-LIB is in  https://github.com/esnet/oscars-lib, only oscars-soap is needed to build this. 
 
-For NA2 configuration, the following parameters can be specified:
+For NA2 configuration file, the following parameters can be specified:
 
                 <plugin name="oscars">
 			<!-- mandatory -->
@@ -22,7 +22,21 @@ For NA2 configuration, the following parameters can be specified:
                                 <property name="oscars.password" value="password" />
 				<!-- mandatory -->
                                 <property name="oscars.description" value="ORCA-NA2-circuit" />
-				<!-- optional, defaults to false, set to true if you want to see SOAP message content  -->
+				<!-- optional, defaults to false, set to true if you want to see OSCARS SOAP message content  -->
                                 <property name="oscars.logging" value="false" />
                         </properties>
                 </plugin>
+
+                
+The plugin uses the following ADDITIONAL properties:
+
+	private static final String ENDTIME_PROP = "oscars.end.time"; - on status call returns the end time of the given reservation
+	private static final String CREATETIME_PROP = "oscars.create.time"; - on status call returns the start time of the given reservation
+	private static final String STATUS_PROP = "oscars.status"; - on status call returns the OSCARS status of the reservation
+
+	private static final String TAGZ_PROP = "oscars.tagZ"; - on join call specifies one of the endpoint tags
+	private static final String TAGA_PROP = "oscars.tagA"; - on join call specifies one of the endpoint tags
+	private static final String EPZ_PROP = "oscars.endpointZ"; - on join call specifies one of the endpoint OSCARS urns
+	private static final String EPA_PROP = "oscars.endpointA"; - on join call specifies one of the endpoint OSCARS urns
+	private static final String BW_PROP = "oscars.bw"; - on join call specifies bandwidth in BPS(!)
+	private static final String IDC_PROP = "oscars.ctrl.to.call"; - on join call specifies the URL of the OSCARS controller
