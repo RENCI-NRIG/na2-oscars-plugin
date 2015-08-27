@@ -25,6 +25,12 @@
                 <orca.snap.repository.url>http://ci-dev.renci.org/nexus/content/repositories/geni-orca-snapshot/</orca.snap.repository.url>
 	</properties>
 
+        <scm>
+                <connection>scm:git:https://github.com/RENCI-NRIG/no2-oscars-plugin.git</connection>
+                <developerConnection>scm:git:https://github.com/RENCI-NRIG/na2-oscars-plugin.git</developerConnection>
+                <url>https://github.com/RENCI-NRIG/na2-oscars-plugin</url>
+        </scm>
+
 	<repositories>
                 <!-- Orca main repository -->
                 <repository>
