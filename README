@@ -40,3 +40,6 @@ The plugin uses the following ADDITIONAL properties:
 	private static final String EPA_PROP = "oscars.endpointA"; - on join call specifies one of the endpoint OSCARS urns
 	private static final String BW_PROP = "oscars.bw"; - on join call specifies bandwidth in BPS(!)
 	private static final String IDC_PROP = "oscars.ctrl.to.call"; - on join call specifies the URL of the OSCARS controller
+
+Note that the plugin caches state related to OSCARS 'driver' for different IDCs. In case of configuration actions (like updating the 
+trusted certificates or keys), nodeagent should be restarted to force OSCARS plugin to refresh its cache. 
