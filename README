@@ -43,3 +43,6 @@ The plugin uses the following ADDITIONAL properties:
 
 Note that the plugin caches state related to OSCARS 'driver' for different IDCs. In case of configuration actions (like updating the 
 trusted certificates or keys), nodeagent should be restarted to force OSCARS plugin to refresh its cache. 
+
+The plugin also builds an independent command-line OSCARS client using the 'package' goal under target/appassembler. This can be 
+used to talk to an OSCARS IDC to manually provision circuits or query for reservations. 
