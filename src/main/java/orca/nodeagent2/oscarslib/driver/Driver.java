@@ -478,15 +478,23 @@ public class Driver {
 		}
 	}
 
-	public String printReservations() {
+	public String printReservations(boolean activeOnly) {
 		try {
-			List<ResDetails> ret = getReservations();
+			
+			List<ResDetails> ret; 
+			
+			if (activeOnly)
+				ret = getActiveReservations();
+			else
+				ret = getReservations();
+			
 			if ((ret == null) || (ret.size() == 0)) {
 				return "No reservations were returnd by " + serverUrl + " for key alias " + keyAlias;
 			}
 			StringBuilder resp = new StringBuilder();
 			for (ResDetails r: ret) {
 				resp.append(detailsToString(r));
+				resp.append("\n");
 			}
 			return resp.toString();
 		} catch (OSCARSFaultMessage ofm) {
@@ -496,23 +504,27 @@ public class Driver {
 			return "Generic exception: " + e.getMessage();
 		}
 	}
+	
+	
 
 	public static String detailsToString(ResDetails d) {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("GRI: " + d.getGlobalReservationId() + "\n");
-		sb.append("  Login: " + d.getLogin() + "\n");
-		sb.append("  Status: " + d.getStatus() + "\n");
-		sb.append("  Start Time: " + d.getUserRequestConstraint().getStartTime() + "\n");
-		sb.append("  End Time: " + d.getUserRequestConstraint().getEndTime() + "\n");
-		sb.append("  Bandwidth: " + d.getUserRequestConstraint().getBandwidth() + "\n");
+		sb.append(d.getGlobalReservationId() + "\t");
+		sb.append(d.getLogin() + "\t");
+		sb.append(d.getStatus() + "\t");
+		sb.append(new Date(d.getUserRequestConstraint().getStartTime()*1000L) + "\t");
+		sb.append(new Date(d.getUserRequestConstraint().getEndTime()*1000L) + "\t");
+		sb.append(d.getUserRequestConstraint().getBandwidth() + "Mbps");
 
 		return sb.toString();
 	}
 
 	public static void main(String[] argv) {
-		Driver d = new Driver(OSCARS_URL, OSCARS_CERT_FILE, OSCARS_KEYSTORE_FILE, OSCARS_KEY_ALIAS, PASSWORD, true);
+		//Driver d = new Driver(OSCARS_URL, OSCARS_CERT_FILE, OSCARS_KEYSTORE_FILE, OSCARS_KEY_ALIAS, PASSWORD, true);
 
-		System.out.println(d.printReservations());
+		//System.out.println(d.printReservations(false));
+		System.out.println(new Date(1447092034*1000L));
+		System.out.println(new Date().getTime());
 	}
 }

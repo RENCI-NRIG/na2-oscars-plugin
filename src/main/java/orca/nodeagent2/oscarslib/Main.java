@@ -244,8 +244,8 @@ public class Main implements Plugin {
 			ResDetails rd = d.queryReservation(schedProps.get(GRI_PROP));
 
 			schedProps.put(STATUS_PROP, rd.getStatus());
-			Date ct = new Date(rd.getUserRequestConstraint().getStartTime()*1000);
-			Date et = new Date(rd.getUserRequestConstraint().getEndTime()*1000);
+			Date ct = new Date(rd.getUserRequestConstraint().getStartTime()*1000L);
+			Date et = new Date(rd.getUserRequestConstraint().getEndTime()*1000L);
 			schedProps.put(CREATETIME_PROP, ct.toString());
 			schedProps.put(ENDTIME_PROP, et.toString());
 
