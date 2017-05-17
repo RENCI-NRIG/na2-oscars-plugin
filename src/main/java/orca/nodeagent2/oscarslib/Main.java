@@ -163,10 +163,8 @@ public class Main implements Plugin {
 
 			log.info("Created OSCARS reservation " + gri);
 
-			String resId = gri;
-
 			// save some properties on the PluginReturn
-			PluginReturn pr = new PluginReturn(new ReservationId(resId), joinProps);
+			PluginReturn pr = new PluginReturn(new ReservationId(gri), joinProps);
 
 			return pr;
 

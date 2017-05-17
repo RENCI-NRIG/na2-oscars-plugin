@@ -19,6 +19,9 @@ import org.apache.commons.cli.ParseException;
  */
 public class DriverMain {
 
+	private static final String CANCEL_CMD = "cancel";
+	private static final String CREATE_CMD = "create";
+	private static final String LIST_CMD = "list";
 	private static final String POLL_INTERVAL = "poll";
 	private static final String KEYSTOREPASS = "keystorepass";
 	private static final String KEY_ALIAS = "alias";
@@ -157,7 +160,7 @@ public class DriverMain {
 			if (line.hasOption("c"))
 				compact = true;
 			
-			if (command.equals("list")) {
+			if (command.equals(LIST_CMD)) {
 				// check command line parameters for list - none outside default
 				Driver d = new Driver(
 						line.getOptionValue(IDC_URL), 
@@ -177,7 +180,7 @@ public class DriverMain {
 						line.getOptionValue(KEYSTOREPASS), false);
 
 				System.out.println(d.printReservations(true));
-			} else if (command.equals("create")) {
+			} else if (command.equals(CREATE_CMD)) {
 				// check command line parameters for create
 				
 				if (!line.hasOption(INT_A) || 
@@ -243,7 +246,7 @@ public class DriverMain {
 					System.out.println(gri + "|" + line.getOptionValue(INT_A) + "|" + tagA + "|" + line.getOptionValue(INT_Z) + "|" + tagZ);
 				else
 					System.out.println("SUCCESS: gri=" + gri);
-			} else if (command.equals("cancel")) {
+			} else if (command.equals(CANCEL_CMD)) {
 				if (!line.hasOption(GRI)) 
 					throw new ParseException("GRI must be specified");
 

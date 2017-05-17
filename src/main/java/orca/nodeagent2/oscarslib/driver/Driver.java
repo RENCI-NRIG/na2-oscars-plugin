@@ -41,15 +41,6 @@ import net.es.oscars.common.soap.gen.OSCARSFaultReport;
  *
  */
 public class Driver {
-	private static final String PASSWORD = "VeryTough55!";
-	private static final String OSCARS_KEYSTORE_FILE = "/Users/ibaldin/.ssl/OSCARS/oscars-orca2.jks";
-	private static final String OSCARS_CERT_FILE= "/Users/ibaldin/.ssl/OSCARS/oscars-orca2.jks";
-	private static final String OSCARS_URL = "https://oscars-devext2.es.net:9001/OSCARS";
-	private static final String OSCARS_MAX_URL = "https://idc.maxgigapop.net:9001/OSCARS";
-	private static final String OSCARS_ION_URL = "https://ion.net.internet2.edu:9001/OSCARS";
-	private static final String OSCARS_AL2S_URL = "https://al2s.net.internet2.edu:9001/OSCARS";
-
-	private static final String OSCARS_KEY_ALIAS = "orca";
 
 	private OSCARS client = null;
 	private String serverUrl = null;
@@ -195,7 +186,7 @@ public class Driver {
 			try {
 				Thread.sleep(pollInterval * 1000);
 			} catch (InterruptedException e) {
-				throw new Exception("Sleep interrupted");
+				throw new Exception("OSCARS reservation query sleep interrupted");
 			} 
 			
 			//send query
@@ -212,7 +203,7 @@ public class Driver {
 					esb.append(err.getErrorMsg());
 					esb.append(" ");
 				}
-				throw new Exception("OSCARSA reservation failed with status " + resvStatus + " due to " + esb.toString());
+				throw new Exception("OSCARS reservation query failed with status " + resvStatus + " due to " + esb.toString());
 			}
 		}
 
@@ -478,6 +469,11 @@ public class Driver {
 		}
 	}
 
+	/**
+	 * Query and print
+	 * @param activeOnly
+	 * @return
+	 */
 	public String printReservations(boolean activeOnly) {
 		try {
 			
@@ -488,15 +484,7 @@ public class Driver {
 			else
 				ret = getReservations();
 			
-			if ((ret == null) || (ret.size() == 0)) {
-				return "No reservations were returnd by " + serverUrl + " for key alias " + keyAlias;
-			}
-			StringBuilder resp = new StringBuilder();
-			for (ResDetails r: ret) {
-				resp.append(detailsToString(r));
-				resp.append("\n");
-			}
-			return resp.toString();
+			return printReservations(ret);
 		} catch (OSCARSFaultMessage ofm) {
 			return "OSCARS Fault Message: " + ofm.getMessage();
 		} catch (Exception e) {
@@ -505,9 +493,104 @@ public class Driver {
 		}
 	}
 	
-	
+	/**
+	 * Print results of prior query
+	 * @param l
+	 * @param activeOnly
+	 * @return
+	 */
+	public String printReservations(List<ResDetails> l) {
+		if ((l == null) || (l.size() == 0)) {
+			return "No reservations were returnd by " + serverUrl + " for key alias " + keyAlias;
+		}
+		StringBuilder resp = new StringBuilder();
+		for (ResDetails r: l) {
+			resp.append(detailsToString(r));
+			resp.append("\n");
+		}
+		return resp.toString();
+	}
 
-	public static String detailsToString(ResDetails d) {
+	/**
+	 * Scan the list of reservations to see if a circuit between two given endpoints is present, returning the GRI.
+	 * Parameters are expected to be non-null
+	 * @param l
+	 * @param epA
+	 * @param epZ
+	 * @param tagA
+	 * @param tagZ
+	 * @return
+	 */
+	public String findActiveReservation(List<ResDetails> l, String epA, String epZ, String tagA, String tagZ) {
+		if ((l == null) || (l.size() == 0)) {
+			return null;
+		}
+		for(ResDetails r: l) {
+			UserRequestConstraintType urc = r.getUserRequestConstraint();
+			if (urc == null)
+				continue;
+			PathInfo pi = urc.getPathInfo();
+			if (pi == null)
+				continue;
+			
+			Layer2Info l2i = pi.getLayer2Info();
+			
+			if (l2i == null)
+				continue;
+			
+			String rEpA = l2i.getSrcEndpoint();
+			String rEpZ = l2i.getDestEndpoint();
+			VlanTag rTagA = l2i.getSrcVtag();
+			VlanTag rTagZ = l2i.getDestVtag();
+			
+			if ((rTagA == null) || (rTagZ == null))
+				continue;
+			
+			if ((epA != null) && (epA.equals(rEpA))) {
+				if ((epZ != null) && (epZ.equals(rEpZ))) {
+					if ((tagA != null) && (tagA.equals(rTagA.getValue()))) {
+						if ((tagZ != null) && (tagZ.equals(rTagZ.getValue()))) {
+							return r.getGlobalReservationId();
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Query for active and try to locate a matching reservation returning the GRI. If not found or exceptions
+	 * encountered, returns null
+	 * @param activeOnly
+	 * @param epA
+	 * @param epZ
+	 * @param tagA
+	 * @param tagZ
+	 * @return
+	 * @throws OSCARSFaultMessage
+	 * @throws Exception
+	 */
+	public String findActiveReservation(boolean activeOnly, String epA, String epZ, String tagA, String tagZ) throws OSCARSFaultMessage, Exception {
+		try {
+			
+			List<ResDetails> ret; 
+			
+			if (activeOnly)
+				ret = getActiveReservations();
+			else
+				ret = getReservations();
+			
+			return findActiveReservation(ret, epA, epZ, tagA, tagZ);
+		} catch (OSCARSFaultMessage ofm) {
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private static String detailsToString(ResDetails d) {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append(d.getGlobalReservationId() + "\t");

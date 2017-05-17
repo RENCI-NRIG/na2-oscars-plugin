@@ -30,14 +30,14 @@ public class ListCmd {
 
         ClientConfigHolder cch = ClientConfigHolder.getInstance();
         ClientConfig cc = new ClientConfig();
-        cc.setKeyPassword("VeryTough55!");
+        cc.setKeyPassword("PASSWORD");
         cch.addClientConfig(serviceUrl, cc);
         cch.setActiveClientConfig(serviceUrl);
 
         OSCARS client = ClientUtil.getInstance().getOSCARSPort(serviceUrl, 
         		"/Users/ibaldin/workspace-oscars/oscars-lib/oscars-client/config/samples/oscars-orca3.jks", 
         		"/Users/ibaldin/workspace-oscars/oscars-lib/oscars-client/config/samples/oscars-orca3.jks",
-        		"orca", "VeryTough55!", true);
+        		"orca", "PASSWORD", true);
         //send request
         ListReply reply = client.listReservations(request);
         
