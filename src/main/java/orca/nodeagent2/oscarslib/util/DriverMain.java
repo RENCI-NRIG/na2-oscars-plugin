@@ -276,7 +276,7 @@ public class DriverMain {
 				if (debugOn)
 					System.out.println("Canceling reservation " + gri);
 				
-				d.cancelResrervation(gri, poll);
+				d.cancelReservation(gri, poll);
 				
 				System.out.println("SUCCESS");
 			}
