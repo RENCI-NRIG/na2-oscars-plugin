@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.renci.node-agent2</groupId>
 	<artifactId>na2-oscars-lib</artifactId>
-	<version>0.7.0-SNAPSHOT</version>
+	<version>0.7.0</version>
 	<packaging>jar</packaging>
 
 	<name>na2-oscars-lib</name>
@@ -52,7 +51,8 @@
                 <connection>scm:git:https://github.com/RENCI-NRIG/no2-oscars-plugin.git</connection>
                 <developerConnection>scm:git:https://github.com/RENCI-NRIG/na2-oscars-plugin.git</developerConnection>
                 <url>https://github.com/RENCI-NRIG/na2-oscars-plugin</url>
-        </scm>
+          <tag>na2-oscars-lib-0.7.0</tag>
+  </scm>
 
 	<repositories>
                 <!-- Orca main repository -->
@@ -195,51 +195,40 @@
 						</goals>
 						<configuration>
 							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 									<resource>META-INF/spring.handlers</resource>
 								</transformer>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 									<resource>META-INF/spring.schemas</resource>
 								</transformer>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 									<resource>META-INF/services/com.sun.tools.xjc.Plugin</resource>
 								</transformer>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 									<resource>META-INF/cxf/cxf.extension</resource>
 								</transformer>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
 									<resource>META-INF/extensions.xml</resource>
 								</transformer>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
 									<resource>META-INF/cxf/extensions.xml</resource>
 								</transformer>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 									<resource>META-INF/cxf/bus-extensions.txt</resource>
 								</transformer>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
 									<resource>META-INF/cxf/bus-extensions.xml</resource>
 								</transformer>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
 									<resource>META-INF/wsdl.plugin.xml</resource>
 								</transformer>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
 									<resource>META-INF/tools.service.validator.xml</resource>
 								</transformer>
 								<transformer implementation="org.apache.cxf.maven.PluginTransformer">
 									<resource>META-INF/tools-plugin.xml</resource>
 								</transformer>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
 									<resource>META-INF/cxf/java2wsbeans.xml</resource>
 								</transformer>
 								<transformer implementation="org.apache.cxf.maven.CXFAllTransformer" />
