@@ -1,4 +1,4 @@
-package orca.nodeagent2.oscarslib;
+package org.renci.nodeagent2.oscarslib;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -7,13 +7,13 @@ import java.util.Map;
 
 import net.es.oscars.api.soap.gen.v06.ResDetails;
 import net.es.oscars.common.soap.gen.OSCARSFaultMessage;
-import orca.nodeagent2.agentlib.Plugin;
-import orca.nodeagent2.agentlib.PluginException;
-import orca.nodeagent2.agentlib.PluginReturn;
-import orca.nodeagent2.agentlib.Properties;
-import orca.nodeagent2.agentlib.ReservationId;
-import orca.nodeagent2.agentlib.Util;
-import orca.nodeagent2.oscarslib.driver.Driver;
+import org.renci.nodeagent2.agentlib.Plugin;
+import org.renci.nodeagent2.agentlib.PluginException;
+import org.renci.nodeagent2.agentlib.PluginReturn;
+import org.renci.nodeagent2.agentlib.Properties;
+import org.renci.nodeagent2.agentlib.ReservationId;
+import org.renci.nodeagent2.agentlib.Util;
+import org.renci.nodeagent2.oscarslib.driver.Driver;
 
 import org.apache.commons.logging.Log;
 

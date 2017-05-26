@@ -1,12 +1,12 @@
-package orca.nodeagent2.oscarslib;
+package org.renci.nodeagent2.oscarslib;
 
 
 import java.util.List;
 
-import orca.nodeagent2.oscarslib.driver.ClientConfig;
-import orca.nodeagent2.oscarslib.driver.ClientConfigHolder;
-import orca.nodeagent2.oscarslib.driver.ClientUtil;
-import orca.nodeagent2.oscarslib.driver.ResvStatus;
+import org.renci.nodeagent2.oscarslib.driver.ClientConfig;
+import org.renci.nodeagent2.oscarslib.driver.ClientConfigHolder;
+import org.renci.nodeagent2.oscarslib.driver.ClientUtil;
+import org.renci.nodeagent2.oscarslib.driver.ResvStatus;
 import net.es.oscars.api.soap.gen.v06.ListReply;
 import net.es.oscars.api.soap.gen.v06.ListRequest;
 import net.es.oscars.api.soap.gen.v06.OSCARS;
@@ -34,7 +34,7 @@ public class ListCmd {
         cch.addClientConfig(serviceUrl, cc);
         cch.setActiveClientConfig(serviceUrl);
 
-        OSCARS client = ClientUtil.getInstance().getOSCARSPort(serviceUrl, 
+        OSCARS client = ClientUtil.getInstance().getOSCARSPort(serviceUrl,
         		"/Users/ibaldin/workspace-oscars/oscars-lib/oscars-client/config/samples/oscars-orca3.jks", 
         		"/Users/ibaldin/workspace-oscars/oscars-lib/oscars-client/config/samples/oscars-orca3.jks",
         		"orca", "PASSWORD", true);

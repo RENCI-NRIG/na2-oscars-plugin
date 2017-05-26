@@ -2,17 +2,40 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>orca.node-agent2</groupId>
+	<groupId>org.renci.node-agent2</groupId>
 	<artifactId>na2-oscars-lib</artifactId>
-	<version>0.6SNAPSHOT</version>
+	<version>0.7.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>na2-oscars-lib</name>
-	<url>http://maven.apache.org</url>
+	<url>https://github.com/RENCI-NRIG/na2-oscars-plugin</url>
+	<description>NodeAgent2 plugin for OSCARS</description>
+
+	<licenses>
+		<license>
+			<name>Eclipse Public Licence, Version 1.0</name>
+			<url>https://www.eclipse.org/legal/epl-v10.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>ibaldin</id>
+			<name>Ilya Baldin</name>
+			<email>ibaldin@renci.org</email>
+		</developer>
+		<developer>
+			<id>vjorlikowski</id>
+			<name>Victor Orlikowki</name>
+			<email>vjo@duke.edu</email>
+		</developer>
+	</developers>
+
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<nodeagent2.version>0.1-SNAPSHOT</nodeagent2.version>
+		<nodeagent2.version>0.2.0</nodeagent2.version>
 		<oscars.version>0.6.1</oscars.version>
 		<santuario.version>2.0.3</santuario.version>
 		<oscars-soap.version>0.6.2</oscars-soap.version>
@@ -56,6 +79,17 @@
 		</repository>
 	</repositories>
 
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -65,7 +99,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>orca.node-agent2</groupId>
+			<groupId>org.renci.node-agent2</groupId>
 			<artifactId>agentlib</artifactId>
 			<version>${nodeagent2.version}</version>
 		</dependency>
@@ -239,7 +273,7 @@
 						<configuration>
 							<programs>
 								<program>
-									<mainClass>orca.nodeagent2.oscarslib.util.DriverMain</mainClass>
+									<mainClass>org.renci.nodeagent2.oscarslib.util.DriverMain</mainClass>
 									<name>oscars-client</name>
 								</program>
 							</programs>
@@ -250,10 +284,94 @@
 			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>appassembler-maven-plugin</artifactId> 
 				<version>1.2.2</version> <executions> <execution> <id>package-execs</id> 
 				<phase>package</phase> <goals> <goal>assemble</goal> </goals> <configuration> 
-				<programs> <program> <mainClass>orca.nodeagent2.oscarslib.ListCmd</mainClass> 
+				<programs> <program> <mainClListCmdtCmd</mainClass>
 				<name>listcmd</name> </program> </programs> </configuration> </execution> 
 				</executions> </plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<!-- The configuration for the Maven release plugin should include disabling
+						the release profile that is part of the Maven Super POM, since we are using
+						our own profile, and specify the deploy goal together with the activation
+						of our release profile -->
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<useReleaseProfile>false</useReleaseProfile>
+					<releaseProfiles>release</releaseProfiles>
+					<goals>deploy</goals>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.7</version>
+						<executions>
+							<execution>
+								<id>default-deploy</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>deploy</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.2.1</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.9.1</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

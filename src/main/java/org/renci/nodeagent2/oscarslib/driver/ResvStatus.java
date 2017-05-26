@@ -1,4 +1,4 @@
-package orca.nodeagent2.oscarslib.driver;
+package org.renci.nodeagent2.oscarslib.driver;
 
 public class  ResvStatus {
     public final static String STATUS_ACCEPTED = "ACCEPTED";       // createReservation is authorized, gri is assigned

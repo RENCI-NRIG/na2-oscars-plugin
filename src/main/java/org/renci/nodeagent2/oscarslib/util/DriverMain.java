@@ -1,9 +1,9 @@
-package orca.nodeagent2.oscarslib.util;
+package org.renci.nodeagent2.oscarslib.util;
 
 import java.util.Calendar;
 
 import net.es.oscars.common.soap.gen.OSCARSFaultMessage;
-import orca.nodeagent2.oscarslib.driver.Driver;
+import org.renci.nodeagent2.oscarslib.driver.Driver;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
