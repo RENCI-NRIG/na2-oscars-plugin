@@ -42,7 +42,7 @@ rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{homedir}
 mkdir -p $RPM_BUILD_ROOT%{homedir}/plugins
 
-cp -R target/na2-oscars-lib-0.6SNAPSHOT-executable.jar $RPM_BUILD_ROOT%{homedir}/plugins/%{name}.jar
+cp -R target/na2-oscars-lib-*-SNAPSHOT-executable.jar $RPM_BUILD_ROOT%{homedir}/plugins/%{name}.jar
 
 %clean
 rm -rf $RPM_BUILD_ROOT
