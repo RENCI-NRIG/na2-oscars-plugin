@@ -202,7 +202,6 @@ public class Driver {
 		try {
 			CreateReply reply = client.createReservation(request);
 			if (!reply.getStatus().equals(ResvStatus.STATUS_OK)) {
-				fairLock.unlock();
 				throw new Exception("OSCARS returned non-OK status " + reply.getStatus());
 			}
 
@@ -215,7 +214,6 @@ public class Driver {
 				try {
 					Thread.sleep(pollInterval * 1000);
 				} catch (InterruptedException e) {
-					fairLock.unlock();
 					throw new Exception("OSCARS reservation query sleep interrupted");
 				}
 
@@ -233,7 +231,6 @@ public class Driver {
 						esb.append(err.getErrorMsg());
 						esb.append(" ");
 					}
-					fairLock.unlock();
 					throw new Exception("OSCARS reservation query failed with status " + resvStatus + " due to " + esb.toString());
 				}
 			}
@@ -291,7 +288,6 @@ public class Driver {
 		try {
 			CreateReply reply = client.createReservation(request);
 			if (!reply.getStatus().equals(ResvStatus.STATUS_OK)) {
-				fairLock.unlock();
 				throw new Exception("OSCARS returned non-OK status " + reply.getStatus());
 			}
 
@@ -304,7 +300,6 @@ public class Driver {
 				try {
 					Thread.sleep(pollInterval * 1000);
 				} catch (InterruptedException e) {
-					fairLock.unlock();
 					throw new Exception("Sleep interrupted");
 				}
 
@@ -322,7 +317,6 @@ public class Driver {
 						esb.append(err.getErrorMsg());
 						esb.append(" ");
 					}
-					fairLock.unlock();
 					throw new Exception("OSCARS reservation failed with status " + resvStatus + " due to " + esb.toString());
 				}
 			}
@@ -369,7 +363,6 @@ public class Driver {
 				try {
 					Thread.sleep(pollInterval * 1000);
 				} catch (InterruptedException e) {
-					fairLock.unlock();
 					throw new Exception("Sleep interrupted");
 				}
 
@@ -387,7 +380,6 @@ public class Driver {
 						esb.append(err.getErrorMsg());
 						esb.append(" ");
 					}
-					fairLock.unlock();
 					throw new Exception("OSCARS extend for " + gri + " failed with status " + resvStatus + " due to " + esb.toString());
 				}
 			}
@@ -419,7 +411,6 @@ public class Driver {
 
 			//display result
 			if (!ResvStatus.STATUS_OK.equals(response.getStatus())) {
-				fairLock.unlock();
 				throw new Exception("The create request for " + gri + " returned status " + response.getStatus());
 			}
 
@@ -434,7 +425,6 @@ public class Driver {
 				try {
 					Thread.sleep(pollInterval * 1000);
 				} catch (InterruptedException e) {
-					fairLock.unlock();
 					throw new Exception("Sleep interrupted");
 				}
 			}
@@ -471,7 +461,6 @@ public class Driver {
 
 			//display result
 			if (!ResvStatus.STATUS_OK.equals(response.getStatus())) {
-				fairLock.unlock();
 				throw new Exception("The teardown request for " + gri + " returned status " + response.getStatus());
 			}
 
@@ -486,7 +475,6 @@ public class Driver {
 				try {
 					Thread.sleep(pollInterval * 1000);
 				} catch (InterruptedException e) {
-					fairLock.unlock();
 					throw new Exception("Sleep interrupted");
 				}
 			}
@@ -517,7 +505,6 @@ public class Driver {
 
 			//display result
 			if (!ResvStatus.STATUS_OK.equals(response.getStatus())) {
-				fairLock.unlock();
 				throw new Exception("The cancel request for " + gri + " returned status " + response.getStatus());
 			}
 
@@ -530,7 +517,6 @@ public class Driver {
 				try {
 					Thread.sleep(pollInterval * 1000);
 				} catch (InterruptedException e) {
-					fairLock.unlock();
 					throw new Exception("Sleep interrupted");
 				}
 
