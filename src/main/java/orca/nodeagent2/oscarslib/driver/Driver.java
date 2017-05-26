@@ -2,6 +2,7 @@ package orca.nodeagent2.oscarslib.driver;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import net.es.oscars.api.soap.gen.v06.CancelResContent;
 import net.es.oscars.api.soap.gen.v06.CancelResReply;
@@ -45,6 +46,7 @@ public class Driver {
 	private OSCARS client = null;
 	private String serverUrl = null;
 	private String keyAlias = null;
+	private ReentrantLock fairLock = new ReentrantLock(true);
 
 	public Driver(String url, String certFile, String keyFile, String alias, String passWord, boolean logging) {
 
@@ -82,6 +84,27 @@ public class Driver {
 		return reply.getResDetails();
 	}
 
+	/**
+	 * List the desired states of interest. Dangerous function because these are just strings,
+	 * no easy way to test what is allowed.
+	 * @param states
+	 * @return
+	 * @throws OSCARSFaultMessage
+	 * @throws Exception
+	 */
+	public List<ResDetails> getReservations(String ... states) throws OSCARSFaultMessage, Exception {
+		ListRequest request = new ListRequest();
+		for(String s: states) {
+			if (s != null) 
+				request.getResStatus().add(s);
+		}
+
+		//send request
+		ListReply reply = client.listReservations(request);
+
+		return reply.getResDetails();
+	}
+	
 	/**
 	 * List only active reservations
 	 * @return
@@ -135,10 +158,10 @@ public class Driver {
 	 * @throws OSCARSClientException
 	 * @throws Exception
 	 */
-	public synchronized String createReservationPoll(String desc, Date start, Date end, int bw, 
+	public String createReservationPoll(String desc, Date start, Date end, int bw, 
 			String pointA, int tagA, String pointZ, int tagZ, int pollInterval) 
 					throws OSCARSFaultMessage, Exception {
-
+		
 		ResCreateContent request = new ResCreateContent();
 		request.setDescription(desc);
 		UserRequestConstraintType userConstraint = new UserRequestConstraintType();
@@ -172,41 +195,49 @@ public class Driver {
 		userConstraint.setPathInfo(pathInfo);
 		request.setUserRequestConstraint(userConstraint);
 
+		String gri;
+
 		//send request
-		CreateReply reply = client.createReservation(request);
-		if(!reply.getStatus().equals(ResvStatus.STATUS_OK))
-			throw new Exception("OSCARS returned non-OK status " + reply.getStatus());
-
-		// poll until circuit is ACTIVE
-		String resvStatus = "";
-		String gri = reply.getGlobalReservationId();
-		while(!resvStatus.equals(ResvStatus.STATUS_ACTIVE)) {
-
-			//sleep for an interval
-			try {
-				Thread.sleep(pollInterval * 1000);
-			} catch (InterruptedException e) {
-				throw new Exception("OSCARS reservation query sleep interrupted");
-			} 
-			
-			//send query
-			QueryResContent queryRequest = new QueryResContent();
-			queryRequest.setGlobalReservationId(gri);
-			QueryResReply queryResponse = client.queryReservation(queryRequest);
-
-			//check status
-			resvStatus = queryResponse.getReservationDetails().getStatus();
-			if(resvStatus.equals(ResvStatus.STATUS_FAILED)) {
-				List<OSCARSFaultReport> errors = queryResponse.getErrorReport();
-				StringBuilder esb = new StringBuilder();
-				for(OSCARSFaultReport err:errors) {
-					esb.append(err.getErrorMsg());
-					esb.append(" ");
-				}
-				throw new Exception("OSCARS reservation query failed with status " + resvStatus + " due to " + esb.toString());
+		fairLock.lock();
+		try {
+			CreateReply reply = client.createReservation(request);
+			if (!reply.getStatus().equals(ResvStatus.STATUS_OK)) {
+				throw new Exception("OSCARS returned non-OK status " + reply.getStatus());
 			}
-		}
 
+			// poll until circuit is ACTIVE
+			String resvStatus = "";
+			gri = reply.getGlobalReservationId();
+			while (!resvStatus.equals(ResvStatus.STATUS_ACTIVE)) {
+
+				//sleep for an interval
+				try {
+					Thread.sleep(pollInterval * 1000);
+				} catch (InterruptedException e) {
+					throw new Exception("OSCARS reservation query sleep interrupted");
+				}
+
+				//send query
+				QueryResContent queryRequest = new QueryResContent();
+				queryRequest.setGlobalReservationId(gri);
+				QueryResReply queryResponse = client.queryReservation(queryRequest);
+
+				//check status
+				resvStatus = queryResponse.getReservationDetails().getStatus();
+				if (resvStatus.equals(ResvStatus.STATUS_FAILED)) {
+					List<OSCARSFaultReport> errors = queryResponse.getErrorReport();
+					StringBuilder esb = new StringBuilder();
+					for (OSCARSFaultReport err : errors) {
+						esb.append(err.getErrorMsg());
+						esb.append(" ");
+					}
+					throw new Exception("OSCARS reservation query failed with status " + resvStatus + " due to " + esb.toString());
+				}
+			}
+		} finally {
+			fairLock.unlock();
+		}
+		
 		return gri;
 	}
 
@@ -223,7 +254,7 @@ public class Driver {
 	 * @throws OSCARSClientException
 	 * @throws Exception
 	 */
-	public synchronized String createReservationPoll(String desc, Date start, Date end, 
+	public String createReservationPoll(String desc, Date start, Date end, 
 			int bw, String pointA, String pointZ, int pollInterval) 
 					throws OSCARSFaultMessage, Exception {
 
@@ -250,39 +281,47 @@ public class Driver {
 		userConstraint.setPathInfo(pathInfo);
 		request.setUserRequestConstraint(userConstraint);
 
+		String gri;
+
 		//send request
-		CreateReply reply = client.createReservation(request);
-		if(!reply.getStatus().equals(ResvStatus.STATUS_OK))
-			throw new Exception("OSCARS returned non-OK status " + reply.getStatus());
-
-		// poll until circuit is ACTIVE
-		String resvStatus = "";
-		String gri = reply.getGlobalReservationId();
-		while(!resvStatus.equals(ResvStatus.STATUS_ACTIVE)) {
-
-			//sleep for an interval
-			try {
-				Thread.sleep(pollInterval * 1000);
-			} catch (InterruptedException e) {
-				throw new Exception("Sleep interrupted");
-			} 
-			
-			//send query
-			QueryResContent queryRequest = new QueryResContent();
-			queryRequest.setGlobalReservationId(gri);
-			QueryResReply queryResponse = client.queryReservation(queryRequest);
-
-			//check status
-			resvStatus = queryResponse.getReservationDetails().getStatus();
-			if(resvStatus.equals(ResvStatus.STATUS_FAILED)) {
-				List<OSCARSFaultReport> errors = queryResponse.getErrorReport();
-				StringBuilder esb = new StringBuilder();
-				for(OSCARSFaultReport err:errors) {
-					esb.append(err.getErrorMsg());
-					esb.append(" ");
-				}
-				throw new Exception("OSCARS reservation failed with status " + resvStatus + " due to " + esb.toString());
+		fairLock.lock();
+		try {
+			CreateReply reply = client.createReservation(request);
+			if (!reply.getStatus().equals(ResvStatus.STATUS_OK)) {
+				throw new Exception("OSCARS returned non-OK status " + reply.getStatus());
 			}
+
+			// poll until circuit is ACTIVE
+			String resvStatus = "";
+			gri = reply.getGlobalReservationId();
+			while (!resvStatus.equals(ResvStatus.STATUS_ACTIVE)) {
+
+				//sleep for an interval
+				try {
+					Thread.sleep(pollInterval * 1000);
+				} catch (InterruptedException e) {
+					throw new Exception("Sleep interrupted");
+				}
+
+				//send query
+				QueryResContent queryRequest = new QueryResContent();
+				queryRequest.setGlobalReservationId(gri);
+				QueryResReply queryResponse = client.queryReservation(queryRequest);
+
+				//check status
+				resvStatus = queryResponse.getReservationDetails().getStatus();
+				if (resvStatus.equals(ResvStatus.STATUS_FAILED)) {
+					List<OSCARSFaultReport> errors = queryResponse.getErrorReport();
+					StringBuilder esb = new StringBuilder();
+					for (OSCARSFaultReport err : errors) {
+						esb.append(err.getErrorMsg());
+						esb.append(" ");
+					}
+					throw new Exception("OSCARS reservation failed with status " + resvStatus + " due to " + esb.toString());
+				}
+			}
+		} finally {
+			fairLock.unlock();
 		}
 
 		return gri;
@@ -297,7 +336,7 @@ public class Driver {
 	 * @throws OSCARSClientException
 	 * @throws Exception
 	 */
-	public synchronized void extendReservation(String gri, Date newEnd, int pollInterval) throws OSCARSFaultMessage, Exception {
+	public void extendReservation(String gri, Date newEnd, int pollInterval) throws OSCARSFaultMessage, Exception {
 		Date now = new Date();
 		
 		if (newEnd.getTime() <= now.getTime()) 
@@ -313,35 +352,41 @@ public class Driver {
 		request.setUserRequestConstraint(userConstraint);
 
 		//send modify request
-		ModifyResReply response = client.modifyReservation(request);
+		fairLock.lock();
+		try {
+			ModifyResReply response = client.modifyReservation(request);
 
-		// poll until circuit is ACTIVE
-		String resvStatus = "";
-		while(!resvStatus.equals(ResvStatus.STATUS_ACTIVE)) {
-			//sleep for an interval
-			try {
-				Thread.sleep(pollInterval * 1000);
-			} catch (InterruptedException e) {
-				throw new Exception("Sleep interrupted");
-			} 
-			
-			//send query
-			QueryResContent queryRequest = new QueryResContent();
-			queryRequest.setGlobalReservationId(gri);
-			QueryResReply queryResponse = client.queryReservation(queryRequest);
-
-			//check status
-			resvStatus = queryResponse.getReservationDetails().getStatus();
-			if(resvStatus.equals(ResvStatus.STATUS_FAILED)) {
-				List<OSCARSFaultReport> errors = queryResponse.getErrorReport();
-				StringBuilder esb = new StringBuilder();
-				for(OSCARSFaultReport err:errors) {
-					esb.append(err.getErrorMsg());
-					esb.append(" ");
+			// poll until circuit is ACTIVE
+			String resvStatus = "";
+			while (!resvStatus.equals(ResvStatus.STATUS_ACTIVE)) {
+				//sleep for an interval
+				try {
+					Thread.sleep(pollInterval * 1000);
+				} catch (InterruptedException e) {
+					throw new Exception("Sleep interrupted");
 				}
-				throw new Exception("OSCARS extend for " + gri + " failed with status " + resvStatus + " due to " + esb.toString());
+
+				//send query
+				QueryResContent queryRequest = new QueryResContent();
+				queryRequest.setGlobalReservationId(gri);
+				QueryResReply queryResponse = client.queryReservation(queryRequest);
+
+				//check status
+				resvStatus = queryResponse.getReservationDetails().getStatus();
+				if (resvStatus.equals(ResvStatus.STATUS_FAILED)) {
+					List<OSCARSFaultReport> errors = queryResponse.getErrorReport();
+					StringBuilder esb = new StringBuilder();
+					for (OSCARSFaultReport err : errors) {
+						esb.append(err.getErrorMsg());
+						esb.append(" ");
+					}
+					throw new Exception("OSCARS extend for " + gri + " failed with status " + resvStatus + " due to " + esb.toString());
+				}
 			}
+		} finally {
+			fairLock.unlock();
 		}
+
 	}
 
 	/**
@@ -352,34 +397,41 @@ public class Driver {
 	 * @throws OSCARSClientException
 	 * @throws Exception
 	 */
-	public synchronized void createPath(String gri, int pollInterval) throws OSCARSFaultMessage, Exception {
+	public void createPath(String gri, int pollInterval) throws OSCARSFaultMessage, Exception {
 
 		//create request
 		CreatePathContent request = new CreatePathContent();
 		request.setGlobalReservationId(gri);
 
-		CreatePathResponseContent response = client.createPath(request);
-
-		//display result
-		if (!ResvStatus.STATUS_OK.equals(response.getStatus())) {
-			throw new Exception("The create request for " + gri + " returned status " + response.getStatus());
-		}
-
-		//poll until reservation is setup
 		String resvStatus = "";
-		while(resvStatus.equals(ResvStatus.STATUS_INSETUP)){
-			//send query
-			QueryResContent queryRequest = new QueryResContent();
-			queryRequest.setGlobalReservationId(gri);
-			QueryResReply queryResponse = client.queryReservation(queryRequest);
-			resvStatus = queryResponse.getReservationDetails().getStatus();
 
-			try {
-				Thread.sleep(pollInterval*1000);
-			} catch (InterruptedException e) {
-				throw new Exception("Sleep interrupted");
-			} 
+		fairLock.lock();
+		try {
+			CreatePathResponseContent response = client.createPath(request);
+
+			//display result
+			if (!ResvStatus.STATUS_OK.equals(response.getStatus())) {
+				throw new Exception("The create request for " + gri + " returned status " + response.getStatus());
+			}
+
+			//poll until reservation is setup
+			while (resvStatus.equals(ResvStatus.STATUS_INSETUP)) {
+				//send query
+				QueryResContent queryRequest = new QueryResContent();
+				queryRequest.setGlobalReservationId(gri);
+				QueryResReply queryResponse = client.queryReservation(queryRequest);
+				resvStatus = queryResponse.getReservationDetails().getStatus();
+
+				try {
+					Thread.sleep(pollInterval * 1000);
+				} catch (InterruptedException e) {
+					throw new Exception("Sleep interrupted");
+				}
+			}
+		} finally {
+			fairLock.unlock();
 		}
+		
 		if (ResvStatus.STATUS_ACTIVE.equals(resvStatus)){
 			return;
 		}else{
@@ -395,35 +447,42 @@ public class Driver {
 	 * @throws OSCARSClientException
 	 * @throws Exception
 	 */
-	public synchronized void teardownPath(String gri, int pollInterval) throws OSCARSFaultMessage, Exception {
+	public void teardownPath(String gri, int pollInterval) throws OSCARSFaultMessage, Exception {
 
 		//create request
 		TeardownPathContent request = new TeardownPathContent();
 		request.setGlobalReservationId(gri);
 
-		TeardownPathResponseContent response = client.teardownPath(request);
-
-		//display result
-		if (!ResvStatus.STATUS_OK.equals(response.getStatus())) 
-			throw new Exception("The teardown request for " + gri + " returned status " + response.getStatus());
-
-		//poll until reservation is down
 		String resvStatus = "";
-		while(resvStatus.equals(ResvStatus.STATUS_INTEARDOWN)){
-			//send query
-			QueryResContent queryRequest = new QueryResContent();
-			queryRequest.setGlobalReservationId(gri);
-			QueryResReply queryResponse = client.queryReservation(queryRequest);
-			resvStatus = queryResponse.getReservationDetails().getStatus();
 
-			try {
-				Thread.sleep(pollInterval*1000);
-			} catch (InterruptedException e) {
-				throw new Exception("Sleep interrupted");
-			} 
+		fairLock.lock();
+		try {
+			TeardownPathResponseContent response = client.teardownPath(request);
+
+			//display result
+			if (!ResvStatus.STATUS_OK.equals(response.getStatus())) {
+				throw new Exception("The teardown request for " + gri + " returned status " + response.getStatus());
+			}
+
+			//poll until reservation is down
+			while (resvStatus.equals(ResvStatus.STATUS_INTEARDOWN)) {
+				//send query
+				QueryResContent queryRequest = new QueryResContent();
+				queryRequest.setGlobalReservationId(gri);
+				QueryResReply queryResponse = client.queryReservation(queryRequest);
+				resvStatus = queryResponse.getReservationDetails().getStatus();
+
+				try {
+					Thread.sleep(pollInterval * 1000);
+				} catch (InterruptedException e) {
+					throw new Exception("Sleep interrupted");
+				}
+			}
+		} finally {
+			fairLock.unlock();
 		}
 
-		if(ResvStatus.STATUS_RESERVED.equals(resvStatus) || 
+		if(ResvStatus.STATUS_RESERVED.equals(resvStatus) ||
 				ResvStatus.STATUS_FINISHED.equals(resvStatus)) {
 			return;
 		} else {
@@ -431,37 +490,46 @@ public class Driver {
 		}
 	}
 
-	public synchronized void cancelResrervation(String gri, int pollInterval) throws OSCARSFaultMessage, Exception {
+	public void cancelReservation(String gri, int pollInterval) throws OSCARSFaultMessage, Exception {
 
 		//create cancel request
 		CancelResContent request = new CancelResContent();
 		request.setGlobalReservationId(gri);
 
-		//send cancel request
-		CancelResReply response = client.cancelReservation(request);
-
-		//display result
-		if(!ResvStatus.STATUS_OK.equals(response.getStatus()))
-			throw new Exception("The cancel request for " + gri + " returned status " + response.getStatus());
-
-		//poll until reservation is canceled
 		String resvStatus = "";
-		while(resvStatus.equals(ResvStatus.STATUS_ACTIVE) || 
-				resvStatus.equals(ResvStatus.STATUS_INCANCEL) || 
-				(resvStatus.length() == 0)) {
 
-			try {
-				Thread.sleep(pollInterval*1000);
-			} catch (InterruptedException e) {
-				throw new Exception("Sleep interrupted");
-			} 
-			
-			//send query
-			QueryResContent queryRequest = new QueryResContent();
-			queryRequest.setGlobalReservationId(gri);
-			QueryResReply queryResponse = client.queryReservation(queryRequest);
-			resvStatus = queryResponse.getReservationDetails().getStatus();
+		//send cancel request
+		fairLock.lock();
+		try {
+			CancelResReply response = client.cancelReservation(request);
+
+			//display result
+			if (!ResvStatus.STATUS_OK.equals(response.getStatus())) {
+				throw new Exception("The cancel request for " + gri + " returned status " + response.getStatus());
+			}
+
+			//poll until reservation is canceled
+
+			while (resvStatus.equals(ResvStatus.STATUS_ACTIVE) ||
+					resvStatus.equals(ResvStatus.STATUS_INCANCEL) ||
+					(resvStatus.length() == 0)) {
+
+				try {
+					Thread.sleep(pollInterval * 1000);
+				} catch (InterruptedException e) {
+					throw new Exception("Sleep interrupted");
+				}
+
+				//send query
+				QueryResContent queryRequest = new QueryResContent();
+				queryRequest.setGlobalReservationId(gri);
+				QueryResReply queryResponse = client.queryReservation(queryRequest);
+				resvStatus = queryResponse.getReservationDetails().getStatus();
+			}
+		} finally {
+			fairLock.unlock();
 		}
+
 		if (ResvStatus.STATUS_CANCELLED.equals(resvStatus)) {
 			return;
 		} else {

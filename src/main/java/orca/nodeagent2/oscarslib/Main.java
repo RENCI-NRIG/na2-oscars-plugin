@@ -189,7 +189,7 @@ public class Main implements Plugin {
 				throw new PluginException("Unable to cancel reservation " + rid + ": unable to find GRI in schedule properties");
 
 			log.info("Canceling OSCARS reservation " + schedProps.get(GRI_PROP));
-			d.cancelResrervation(schedProps.get(GRI_PROP), POLL_INTERVAL);
+			d.cancelReservation(schedProps.get(GRI_PROP), POLL_INTERVAL);
 
 			PluginReturn pr = new PluginReturn(rid, schedProps);
 
