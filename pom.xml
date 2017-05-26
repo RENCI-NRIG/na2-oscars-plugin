@@ -3,7 +3,7 @@
 
 	<groupId>org.renci.node-agent2</groupId>
 	<artifactId>na2-oscars-lib</artifactId>
-	<version>0.7.0</version>
+	<version>0.7.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>na2-oscars-lib</name>
@@ -51,7 +51,7 @@
                 <connection>scm:git:https://github.com/RENCI-NRIG/no2-oscars-plugin.git</connection>
                 <developerConnection>scm:git:https://github.com/RENCI-NRIG/na2-oscars-plugin.git</developerConnection>
                 <url>https://github.com/RENCI-NRIG/na2-oscars-plugin</url>
-          <tag>na2-oscars-lib-0.7.0</tag>
+          <tag>HEAD</tag>
   </scm>
 
 	<repositories>
