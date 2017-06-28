@@ -44,7 +44,7 @@ public class Main implements Plugin {
 	public void initialize(String config, Properties configProps)
 			throws PluginException {
 		try {
-			log = Util.getLog("oscars");
+			log = Util.getLog(this.getClass().getName());
 			//log = LogFactory.getLog("this");
 			log.info("Initializing OSCARS plugin");
 
