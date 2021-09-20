@@ -36,7 +36,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<nodeagent2.version>0.2.0</nodeagent2.version>
 		<oscars.version>0.6.1</oscars.version>
-		<santuario.version>2.0.3</santuario.version>
+		<santuario.version>2.1.7</santuario.version>
 		<oscars-soap.version>0.6.2</oscars-soap.version>
 		<cxf.version>3.0.3</cxf.version>
 		<maven-compiler-version>3.2</maven-compiler-version>
