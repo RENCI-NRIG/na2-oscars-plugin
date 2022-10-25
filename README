@@ -1,3 +1,5 @@
+The code is no longer being maintained. The repo is kept for historical reasons.
+
 OSCARS-LIB is in  https://github.com/esnet/oscars-lib, only oscars-soap is needed to build this. 
 
 For NA2 configuration file, the following parameters can be specified:
